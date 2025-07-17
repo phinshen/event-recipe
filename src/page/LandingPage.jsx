@@ -20,10 +20,10 @@ export default function LandingPage() {
                 menu.
               </p>
               <div className="d-flex gap-3">
-                <Button to="/signup" variant="light" size="lg">
+                <Button as={Link} to="/signup" variant="light" size="lg">
                   Get Started
                 </Button>
-                <Button to="/login" variant="outline-light" size="lg">
+                <Button as={Link} to="/login" variant="outline-light" size="lg">
                   Sign In
                 </Button>
               </div>
