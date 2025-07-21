@@ -7,6 +7,7 @@ import Navigation from "./components/Navigation";
 import LoginPage from "./page/LoginPage";
 import SignupPage from "./page/SignupPage";
 import Footer from "./components/Footer";
+import EventPage from "./page/EventPage";
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />
                 <Route path="/home" element={<HomePage />} />
+                <Route path="/event" element={<EventPage />} />
               </Routes>
             </main>
             <Footer />
