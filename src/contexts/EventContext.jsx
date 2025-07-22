@@ -2,10 +2,10 @@ import { createContext, useContext, useState, useEffect } from "react";
 
 const EventContext = createContext();
 
-export const useEvents = () => {
+export const useEvent = () => {
   const context = useContext(EventContext);
   if (!context) {
-    throw new Error("useEvents must be used within an EventProvider");
+    throw new Error("useEvent must be used within an EventProvider");
   }
   return context;
 };

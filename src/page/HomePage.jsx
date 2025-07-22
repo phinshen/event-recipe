@@ -1,11 +1,11 @@
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { useEvents } from "../contexts/EventContext";
+import { useEvent } from "../contexts/EventContext";
 
 export default function HomePage() {
   const { user } = useAuth();
-  const { events } = useEvents();
+  const { events } = useEvent();
 
   const totalRecipes = events.reduce(
     (total, event) => total + event.recipes.length,
