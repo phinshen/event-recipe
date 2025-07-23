@@ -17,7 +17,7 @@ export default function HomePage() {
       <Row>
         <Col>
           <div className="text-center mb-5">
-            <h1 className="display-4 fw-bold">Welcome back, {user.name}!</h1>
+            <h1 className="display-4 fw-bold">Welcome back, !</h1>
             <p className="lead text-muted">
               Ready to organize your next culinary event?
             </p>

@@ -34,15 +34,15 @@ export default function Navigation() {
                 </Nav.Link>
                 <Nav.Link
                   as={Link}
-                  to="/recipes"
-                  className={isActive("/home") ? "active" : ""}
+                  to="/recipe"
+                  className={isActive("/recipe") ? "active" : ""}
                 >
                   Recipes
                 </Nav.Link>
                 <Nav.Link
                   as={Link}
-                  to="/events"
-                  className={isActive("/home") ? "active" : ""}
+                  to="/event"
+                  className={isActive("/event") ? "active" : ""}
                 >
                   Events
                 </Nav.Link>
@@ -52,8 +52,16 @@ export default function Navigation() {
           <Nav>
             {user ? (
               <>
-                <Navbar.Text className="me-3">
-                  Welcome, {user.name}!
+                <Navbar.Text className="me-3 d-flex align-items-center">
+                  {user.photoURL && (
+                    <img
+                      src={user.photoURL || ""}
+                      alt="Profile"
+                      className="rounded-circle me-2"
+                      style={{ width: "32px", height: "32px" }}
+                    />
+                  )}
+                  Welcome, {user.displayName || user.email?.split("@")[0]}!
                 </Navbar.Text>
                 <Button
                   variant="outline-light"
