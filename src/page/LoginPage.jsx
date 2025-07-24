@@ -10,14 +10,38 @@ import {
 } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import SocialLoginButton from "../components/SocialLoginButton";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const [socialLoading, setSocialLoading] = useState("");
+  const { login, signInWithGoogle, signInWithFacebook, signInWithApple } =
+    useAuth();
   const navigate = useNavigate();
+
+  const getFirebaseErrorMessage = (errorCode) => {
+    switch (errorCode) {
+      case "auth/user-not-found":
+        return "No account found with this email address.";
+      case "auth/wrong-password":
+        return "Incorrect password. Please try again.";
+      case "auth/invali-email":
+        return "Please enter a valid email address.";
+      case "auth/user-disabled":
+        return "This account has veen disabled.";
+      case "auth/too-many-requests":
+        return "Too many failed attempts. Please try again later.";
+      case "auth/popup-closed-by-user":
+        return "Pop-up was blocked. Please allow pop-ups and try again.";
+      case "cancelled-popup-request":
+        return "Sign-in was cancelled.";
+      default:
+        return "An error occurred during sign-in. Please try again.";
+    }
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -33,9 +57,39 @@ export default function LoginPage() {
       await login(email, password);
       navigate("/home");
     } catch (error) {
-      setError(error, "Failed to log in.");
+      setError(getFirebaseErrorMessage(error.code));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSocialLogin = async (provider) => {
+    try {
+      setError("");
+      setSocialLoading(provider);
+
+      let result;
+      switch (provider) {
+        case "google":
+          result = await signInWithGoogle();
+          break;
+        case "facebook":
+          result = await signInWithFacebook();
+          break;
+        case "apple":
+          result = await signInWithApple();
+          break;
+        default:
+          throw new Error("Invalid Provider");
+      }
+
+      if (result) {
+        navigate("/home");
+      }
+    } catch (error) {
+      setError(getFirebaseErrorMessage(error.code));
+    } finally {
+      setSocialLoading("");
     }
   };
 
@@ -52,6 +106,38 @@ export default function LoginPage() {
 
               {error && <Alert variant="danger">{error}</Alert>}
 
+              {/* Social Login Buttons */}
+              <div className="mb-4">
+                <SocialLoginButton
+                  provider="google"
+                  onClick={() => handleSocialLogin("google")}
+                  loading={socialLoading === "google"}
+                  disabled={loading || socialLoading !== ""}
+                />
+                <SocialLoginButton
+                  provider="facebook"
+                  onClick={() => handleSocialLogin("facebook")}
+                  loading={socialLoading === "facebook"}
+                  disabled={loading || socialLoading !== ""}
+                />
+                <SocialLoginButton
+                  provider="apple"
+                  onClick={() => handleSocialLogin("apple")}
+                  loading={socialLoading === "apple"}
+                  disabled={loading || socialLoading !== ""}
+                />
+              </div>
+
+              {/* Divider */}
+              <div className="text-center mb-4">
+                <div className="d-flex align-items-center">
+                  <hr className="flex-grow-1" />
+                  <span className="px-3 text-muted small">OR</span>
+                  <hr className="flex-grow-1" />
+                </div>
+              </div>
+
+              {/* Email/Password Form */}
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3">
                   <Form.Label>Email</Form.Label>

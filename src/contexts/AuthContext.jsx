@@ -1,4 +1,18 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged,
+  updateProfile,
+} from "firebase/auth";
+import {
+  googleProvider,
+  facebookProvider,
+  appleProvider,
+  auth,
+} from "../config/firebase";
 
 const AuthContext = createContext();
 
@@ -15,47 +29,62 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // check if user is logged in from localStorage
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+          emailVerified: user.emailVerified,
+        });
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+    return unsubscribe;
   }, []);
 
-  const login = (email, password) => {
-    // mock login - in real app, you would call an API
-    const mockUser = {
-      id: 1,
-      email: email,
-      name: email.split("@")[0],
-    };
-    setUser(mockUser);
-    localStorage.setItem("user", JSON.stringify(mockUser));
-    return Promise.resolve(mockUser);
+  const signup = async (email, password, displayName) => {
+    const result = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(result.user, {
+      displayName: displayName,
+    });
+    return result;
   };
 
-  const signup = (email, password, name) => {
-    // mock signup - in real app, youu would call an API
-    const mockUser = {
-      id: Date.now(),
-      email: email,
-      name: name,
-    };
-    setUser(mockUser);
-    localStorage.setItem("user", JSON.stringify(mockUser));
-    return Promise.resolve(mockUser);
+  const login = async (email, password) => {
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    return result;
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("user");
+  const signInWithGoogle = async () => {
+    const result = await signInWithPopup(auth, googleProvider);
+    return result;
+  };
+
+  const signInWithFacebook = async () => {
+    const result = await signInWithPopup(auth, facebookProvider);
+    return result;
+  };
+
+  const signInWithApple = async () => {
+    const result = await signInWithPopup(auth, appleProvider);
+    return result;
+  };
+
+  const logout = async () => {
+    await signOut(auth);
   };
 
   const value = {
     user,
-    login,
     signup,
+    login,
+    signInWithGoogle,
+    signInWithFacebook,
+    signInWithApple,
     logout,
     loading,
   };
