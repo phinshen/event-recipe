@@ -10,20 +10,6 @@ const SocialLoginButton = ({ provider, onClick, loading, disabled }) => {
           bgColor: "#4285f4",
           textColor: "white",
         };
-      case "facebook":
-        return {
-          icon: "📘",
-          text: "Continue with Facebook",
-          bgColor: "#1877f2",
-          textColor: "white",
-        };
-      case "apple":
-        return {
-          icon: "🍎",
-          text: "Continue with Apple",
-          bgColor: "#000000",
-          textColor: "white",
-        };
       default:
         return {
           icon: "🔐",

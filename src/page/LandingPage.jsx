@@ -112,7 +112,7 @@ export default function LandingPage() {
                 Join thousands of users who are already organizing their events
                 with EventRecipe
               </p>
-              <Button to="/signup" variant="primary" size="lg">
+              <Button as={Link} to="/signup" variant="primary" size="lg">
                 Create Your Account
               </Button>
             </Col>

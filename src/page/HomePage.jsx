@@ -1,10 +1,8 @@
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
 import { useEvent } from "../contexts/EventContext";
 
 export default function HomePage() {
-  const { user } = useAuth();
   const { events } = useEvent();
 
   const totalRecipes = events.reduce(
@@ -17,9 +15,7 @@ export default function HomePage() {
       <Row>
         <Col>
           <div className="text-center mb-5">
-            <h1 className="display-4 fw-bold">
-              Welcome back, {user.displayName || user.email?.split("@")[0]}!
-            </h1>
+            <h1 className="display-4 fw-bold">Welcome back!</h1>
             <p className="lead text-muted">
               Ready to organize your next culinary event?
             </p>
@@ -77,7 +73,7 @@ export default function HomePage() {
                   Discover new recipes from TheMealDB and add them to your
                   events.
                 </Card.Text>
-                <Button as={Link} to="/recipes" variant="primary">
+                <Button as={Link} to="/recipe" variant="primary">
                   Browse Recipes
                 </Button>
               </div>
@@ -95,7 +91,7 @@ export default function HomePage() {
                 <Card.Text>
                   Create new events or manage your existing ones.
                 </Card.Text>
-                <Button as={Link} to="/events" variant="success">
+                <Button as={Link} to="/event" variant="success">
                   Manage Events
                 </Button>
               </div>

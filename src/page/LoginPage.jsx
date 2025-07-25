@@ -18,8 +18,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [socialLoading, setSocialLoading] = useState("");
-  const { login, signInWithGoogle, signInWithFacebook, signInWithApple } =
-    useAuth();
+  const { login, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
 
   const getFirebaseErrorMessage = (errorCode) => {
@@ -73,12 +72,6 @@ export default function LoginPage() {
         case "google":
           result = await signInWithGoogle();
           break;
-        case "facebook":
-          result = await signInWithFacebook();
-          break;
-        case "apple":
-          result = await signInWithApple();
-          break;
         default:
           throw new Error("Invalid Provider");
       }
@@ -112,18 +105,6 @@ export default function LoginPage() {
                   provider="google"
                   onClick={() => handleSocialLogin("google")}
                   loading={socialLoading === "google"}
-                  disabled={loading || socialLoading !== ""}
-                />
-                <SocialLoginButton
-                  provider="facebook"
-                  onClick={() => handleSocialLogin("facebook")}
-                  loading={socialLoading === "facebook"}
-                  disabled={loading || socialLoading !== ""}
-                />
-                <SocialLoginButton
-                  provider="apple"
-                  onClick={() => handleSocialLogin("apple")}
-                  loading={socialLoading === "apple"}
                   disabled={loading || socialLoading !== ""}
                 />
               </div>

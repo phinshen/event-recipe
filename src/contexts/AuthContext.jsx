@@ -6,6 +6,7 @@ import {
   signOut,
   onAuthStateChanged,
   updateProfile,
+  sendEmailVerification,
 } from "firebase/auth";
 import {
   googleProvider,
@@ -35,8 +36,9 @@ export const AuthProvider = ({ children }) => {
           uid: user.uid,
           email: user.email,
           displayName: user.displayName,
-          photoURL: user.photoURL,
           emailVerified: user.emailVerified,
+          providerData: user.providerData,
+          metadata: user.metadata,
         });
       } else {
         setUser(null);
@@ -46,36 +48,80 @@ export const AuthProvider = ({ children }) => {
     return unsubscribe;
   }, []);
 
+  // email / password signup
   const signup = async (email, password, displayName) => {
-    const result = await createUserWithEmailAndPassword(auth, email, password);
-    await updateProfile(result.user, {
-      displayName: displayName,
-    });
-    return result;
+    try {
+      // create user with email and password
+      const result = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      // update profile with display name
+      await updateProfile(result.user, {
+        displayName: displayName,
+      });
+      // send email verification
+      await sendEmailVerification(result.user);
+      return result;
+    } catch (error) {
+      console.error("Signup error:", error);
+      throw error;
+    }
   };
 
+  // email password login
   const login = async (email, password) => {
-    const result = await signInWithEmailAndPassword(auth, email, password);
-    return result;
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      return result;
+    } catch (error) {
+      console.error("Login error:", error);
+      throw error;
+    }
   };
 
+  // google sign in
   const signInWithGoogle = async () => {
-    const result = await signInWithPopup(auth, googleProvider);
-    return result;
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      return result;
+    } catch (error) {
+      console.error("Google sign-in error:", error);
+      throw error;
+    }
   };
 
+  // facebook sign in
   const signInWithFacebook = async () => {
-    const result = await signInWithPopup(auth, facebookProvider);
-    return result;
+    try {
+      const result = await signInWithPopup(auth, facebookProvider);
+      return result;
+    } catch (error) {
+      console.error("Facebook sign-in error:", error);
+      throw error;
+    }
   };
 
+  // apple sign in
   const signInWithApple = async () => {
-    const result = await signInWithPopup(auth, appleProvider);
-    return result;
+    try {
+      const result = await signInWithPopup(auth, appleProvider);
+      return result;
+    } catch (error) {
+      console.error("Apple sign-in error:", error);
+      throw error;
+    }
   };
 
+  // logout
   const logout = async () => {
-    await signOut(auth);
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Logout error:", error);
+      throw error;
+    }
   };
 
   const value = {

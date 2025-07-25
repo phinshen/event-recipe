@@ -10,6 +10,7 @@ import {
 } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import SocialLoginButton from "../components/SocialLoginButton";
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -20,8 +21,30 @@ export default function SignupPage() {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signup } = useAuth();
+  const [socialLoading, setSocialLoading] = useState("");
+  const { signup, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
+
+  const getFirebaseErrorMessage = (errorCode) => {
+    switch (errorCode) {
+      case " auth/email-already-in-use":
+        return "An account with this email already exists.";
+      case "auth/invalid-email":
+        return "Please enter a valid email.";
+      case "auth/operation-not-allowed":
+        return "Email/password accounts are not enabled.";
+      case "auth/weak-password":
+        return "Password should be at least 6 characters long.";
+      case "auth/popup-closed-by-user":
+        return "Sign-up was cancelled. Please try again.";
+      case "auth/popup-blocked":
+        return "Pop-up was blocked. Please allow pop-ups and try again.";
+      case "auth/cancelled-popup-request":
+        return "Sign-up was cancelled.";
+      default:
+        return "An error occurred during sign-up. Please try again.";
+    }
+  };
 
   const handleChange = (event) => {
     setFormData({
@@ -65,6 +88,30 @@ export default function SignupPage() {
     }
   };
 
+  const handleSocialLogin = async (provider) => {
+    try {
+      setError("");
+      setSocialLoading(provider);
+
+      let result;
+      switch (provider) {
+        case "google":
+          result = await signInWithGoogle();
+          break;
+        default:
+          throw new Error("Invalid provider");
+      }
+
+      if (result) {
+        navigate("/home");
+      }
+    } catch (error) {
+      setError(getFirebaseErrorMessage(error.code));
+    } finally {
+      setSocialLoading("");
+    }
+  };
+
   return (
     <Container className="py-5">
       <Row className="justify-content-center">
@@ -73,11 +120,33 @@ export default function SignupPage() {
             <Card.Body className="p-4">
               <div className="text-center mb-4">
                 <h2 className="fw-bold">Create Account</h2>
-                <p className="text-muted">Join EventRecipe today!</p>
+                <p className="text-muted">
+                  Join EventRecipe and start organizing your culinary events!
+                </p>
               </div>
 
               {error && <Alert variant="danger">{error}</Alert>}
 
+              {/* Social Login Buttons */}
+              <div className="mb-4">
+                <SocialLoginButton
+                  provider="google"
+                  onClick={() => handleSocialLogin("google")}
+                  loading={socialLoading === "google"}
+                  disabled={loading || socialLoading !== ""}
+                />
+              </div>
+
+              {/* Divider */}
+              <div className="text-center mb-4">
+                <div className="d-flex align-items-center">
+                  <hr className="flex-grow-1" />
+                  <span className="px-3 text-muted small">OR</span>
+                  <hr className="flex-grow-1" />
+                </div>
+              </div>
+
+              {/* Registration Form */}
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3">
                   <Form.Label>Full Name</Form.Label>
