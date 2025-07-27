@@ -13,8 +13,15 @@ import {
 import { useEvent } from "../contexts/EventContext";
 
 export default function EventPage() {
-  const { events, createEvent, removeRecipeFromEvent, deleteEvent } =
-    useEvent();
+  const {
+    events,
+    loading,
+    creating,
+    createEvent,
+    updateEvent,
+    removeRecipeFromEvent,
+    deleteEvent,
+  } = useEvent();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [eventToDelete, setEventToDelete] = useState(null);
@@ -25,6 +32,8 @@ export default function EventPage() {
     location: "",
   });
   const [message, setMessage] = useState("");
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [eventToEdit, setEventToEdit] = useState(null);
 
   const handleInputChange = (event) => {
     setFormData({
@@ -62,6 +71,34 @@ export default function EventPage() {
     setShowDeleteModal(true);
   };
 
+  const confirmEditEvent = (event) => {
+    setEventToEdit(event);
+    setFormData({
+      name: event.title, // Map title to name for the form
+      description: event.description || "",
+      date: event.date,
+      location: event.location || "",
+    });
+    setShowEditModal(true);
+  };
+
+  const handleEditEvent = (event) => {
+    event.preventDefault();
+    if (!formData.name || !formData.date) {
+      setMessage("Please fill in required fields");
+      return;
+    }
+
+    updateEvent(eventToEdit.id, formData);
+    setFormData({ name: "", description: "", date: "", location: "" });
+    setShowEditModal(false);
+    setEventToEdit(null);
+    setMessage("Event updated successfully!");
+    setTimeout(() => setMessage(""), 3000);
+  };
+
+  console.log("Events from context:", events);
+
   return (
     <Container className="py-4">
       <Row className="mb-4">
@@ -87,21 +124,42 @@ export default function EventPage() {
       )}
 
       {/* Event List */}
-      {events.length < 0 ? (
+      {loading ? (
+        <Row>
+          <Col>
+            <div className="text-center py-5">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+              <p className="mt-3">Loading your events...</p>
+            </div>
+          </Col>
+        </Row>
+      ) : events.length > 0 ? (
         <Row>
           {events.map((event) => (
             <Col lg={6} key={event.id} className="mb-4">
               <Card className="h-100 shadow-sm">
                 <Card.Header className="bg-primary text-white">
                   <div className="d-flex justify-content-between align-items-center">
-                    <h5 className="mb-8">{event.name}</h5>
-                    <Button
-                      variant="outline-light"
-                      size="ms"
-                      onClick={() => confirmDeleteEvent(event)}
-                    >
-                      Delete
-                    </Button>
+                    <h5 className="mb-0">{event.title}</h5>
+                    <div>
+                      <Button
+                        variant="outline-light"
+                        size="sm"
+                        className="me-2"
+                        onClick={() => confirmEditEvent(event)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="outline-light"
+                        size="sm"
+                        onClick={() => confirmDeleteEvent(event)}
+                      >
+                        Delete
+                      </Button>
+                    </div>
                   </div>
                 </Card.Header>
                 <Card.Body>
@@ -124,10 +182,13 @@ export default function EventPage() {
 
                   <div className="mb-3">
                     <div className="d-flex justify-content-between align-items-center mb-2">
-                      <h6 className="mb-0">Recipes ({event.recipes.length})</h6>
+                      <h6 className="mb-0">
+                        Recipes ({event.recipes?.length || 0})
+                      </h6>
                     </div>
 
-                    {event.recipes.length > 0 ? (
+                    {Array.isArray(event.recipes) &&
+                    event.recipes.length > 0 ? (
                       <div
                         className="recipe-list"
                         style={{ maxHeight: "300px", overflowY: "auto" }}
@@ -187,7 +248,7 @@ export default function EventPage() {
                 </Card.Body>
                 <Card.Footer className="text-muted">
                   <small>
-                    Created on {new Date(event.createdAt).toLocaleDateString()}
+                    Created on {new Date(event.created_at).toLocaleDateString()}
                   </small>
                 </Card.Footer>
               </Card>
@@ -279,8 +340,83 @@ export default function EventPage() {
             >
               Cancel
             </Button>
-            <Button vairant="primary" type="submit">
-              Create Event
+            <Button variant="primary" type="submit" disabled={creating}>
+              {creating ? (
+                <>
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                  ></span>
+                  Creating...
+                </>
+              ) : (
+                "Create Event"
+              )}
+            </Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
+
+      {/* Edit Event Modal */}
+      <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Event</Modal.Title>
+        </Modal.Header>
+        <Form onSubmit={handleEditEvent}>
+          <Modal.Body>
+            <Form.Group className="mb-3">
+              <Form.Label>Event Name: </Form.Label>
+              <Form.Control
+                type="text"
+                name="name"
+                placeholder="e.g., Birthday Party, Holiday Dinner"
+                value={formData.name}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Date: </Form.Label>
+              <Form.Control
+                type="date"
+                name="date"
+                value={formData.date}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Location: </Form.Label>
+              <Form.Control
+                type="text"
+                name="location"
+                placeholder="e.g., Home, Restaurant, Park"
+                value={formData.location}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Description: </Form.Label>
+              <Form.Control
+                type="text"
+                name="description"
+                placeholder="Tell us about your event"
+                value={formData.description}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+              Cancel
+            </Button>
+            <Button variant="primary" type="submit">
+              Update Event
             </Button>
           </Modal.Footer>
         </Form>
@@ -293,10 +429,10 @@ export default function EventPage() {
         </Modal.Header>
         <Modal.Body>
           <p>
-            Are you sure you want to delete the event "{eventToDelete?.name}"?
+            Are you sure you want to delete the event "{eventToDelete?.title}"?
             This action cannot be undone.
           </p>
-          {eventToDelete?.recipes.length > 0 && (
+          {eventToDelete?.recipes?.length > 0 && (
             <Alert variant="warning">
               This event contains {eventToDelete.recipes.length} recipe(s) that
               will also be removed.

@@ -189,7 +189,7 @@ export default function SignupPage() {
                   <Form.Control
                     type="password"
                     placeholder="Enter your password"
-                    name="password"
+                    name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required

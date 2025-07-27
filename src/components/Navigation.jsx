@@ -34,15 +34,15 @@ export default function Navigation() {
                 </Nav.Link>
                 <Nav.Link
                   as={Link}
-                  to="/recipe"
-                  className={isActive("/recipe") ? "active" : ""}
+                  to="/recipes"
+                  className={isActive("/recipes") ? "active" : ""}
                 >
                   Recipes
                 </Nav.Link>
                 <Nav.Link
                   as={Link}
-                  to="/event"
-                  className={isActive("/event") ? "active" : ""}
+                  to="/events"
+                  className={isActive("/events") ? "active" : ""}
                 >
                   Events
                 </Nav.Link>

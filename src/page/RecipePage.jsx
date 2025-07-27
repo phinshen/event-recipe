@@ -22,6 +22,7 @@ export default function RecipePage() {
   const [showEventModal, setShowEventModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState("");
   const [message, setMessage] = useState("");
+  const [addingToEvent, setAddingToEvent] = useState(false);
   const { events, addRecipeToEvent } = useEvent();
 
   useEffect(() => {
@@ -44,6 +45,8 @@ export default function RecipePage() {
       setRecipes(meals);
     } catch (error) {
       console.error("Error fetching recipes:", error);
+      setMessage("Error loading recipes. Please try again.");
+      setTimeout(() => setMessage(""), 3000);
     } finally {
       setLoading(false);
     }
@@ -58,12 +61,21 @@ export default function RecipePage() {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`
+        `https://www.themealdb.com/api/json/v1/1/search.php?s=${encodeURIComponent(
+          query
+        )}`
       );
       const data = await response.json();
       setRecipes(data.meals || []);
+
+      if (!data.meals || data.meals.length === 0) {
+        setMessage("No recipes found. Try a different search term.");
+        setTimeout(() => setMessage(""), 3000);
+      }
     } catch (error) {
-      console.error("Error searchirng recipes:", error);
+      console.error("Error searching recipes:", error);
+      setMessage("Error searching recipes. Please try again.");
+      setTimeout(() => setMessage(""), 3000);
       setRecipes([]);
     } finally {
       setLoading(false);
@@ -85,13 +97,27 @@ export default function RecipePage() {
     setShowEventModal(true);
   };
 
-  const handleConfimAddToEvent = () => {
+  const handleConfirmAddToEvent = async () => {
     if (selectedEvent && selectedRecipe) {
-      addRecipeToEvent(Number.parseInt(selectedEvent), selectedRecipe);
-      setMessage("Recipe added to event successfully!");
-      setShowEventModal(false);
-      setSelectedEvent("");
-      setTimeout(() => setMessage(""), 3000);
+      setAddingToEvent(true);
+      try {
+        await addRecipeToEvent(Number.parseInt(selectedEvent), selectedRecipe);
+        setMessage(`"${selectedRecipe.strMeal}" added to event successfully!`);
+        setShowEventModal(false);
+        setSelectedEvent("");
+        setSelectedRecipe(null);
+        setTimeout(() => setMessage(""), 5000);
+      } catch (error) {
+        console.error("Error adding recipe:", error);
+        if (error.response?.status === 409) {
+          setMessage("This recipe is already added to this event!");
+        } else {
+          setMessage("Error adding recipe to event. Please try again.");
+        }
+        setTimeout(() => setMessage(""), 5000);
+      } finally {
+        setAddingToEvent(false);
+      }
     }
   };
 
@@ -109,19 +135,33 @@ export default function RecipePage() {
     return ingredients;
   };
 
+  const isRecipeInEvent = (recipe, eventId) => {
+    const event = events.find((e) => e.id === eventId);
+    return event?.recipes?.some((r) => r.idMeal === recipe.idMeal) || false;
+  };
+
   return (
     <Container className="py-4">
       <Row className="mb-4">
         <Col>
           <h1 className="display-5 fw-bold mb-3">Recipe Collection</h1>
           <p className="lead text-muted">
-            Discover delicious recipes from around the world
+            Discover delicious recipes from around the world and add them to
+            your events
           </p>
         </Col>
       </Row>
 
       {message && (
-        <Alert vairant="success" dismissible onClose={() => setMessage("")}>
+        <Alert
+          variant={
+            message.includes("Error") || message.includes("already")
+              ? "warning"
+              : "success"
+          }
+          dismissible
+          onClose={() => setMessage("")}
+        >
           {message}
         </Alert>
       )}
@@ -133,20 +173,21 @@ export default function RecipePage() {
             <div className="d-flex gap-2">
               <Form.Control
                 type="text"
-                placeholder="Search for recipes..."
+                placeholder="Search for recipes (e.g., chicken, pasta, dessert)..."
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
               />
-              <Button type="submit" variant="primary">
-                Search
+              <Button type="submit" variant="primary" disabled={loading}>
+                {loading ? <Spinner animation="border" size="sm" /> : "Search"}
               </Button>
               <Button
                 type="button"
-                vairant="outline-secondary"
+                variant="outline-secondary"
                 onClick={() => {
                   setSearchTerm("");
                   fetchRandomRecipes();
                 }}
+                disabled={loading}
               >
                 Random
               </Button>
@@ -159,7 +200,7 @@ export default function RecipePage() {
       {loading && (
         <div className="text-center py-5">
           <Spinner animation="border" variant="primary" />
-          <p className="mt-2">Loading recipes...</p>
+          <p className="mt-2">Loading delicious recipes...</p>
         </div>
       )}
 
@@ -169,23 +210,28 @@ export default function RecipePage() {
           {recipes.length > 0 ? (
             recipes.map((recipe) => (
               <Col md={6} lg={4} key={recipe.idMeal} className="mb-4">
-                <Card className="h-100 shadow-ms">
+                <Card className="h-100 shadow-sm">
                   <Card.Img
                     variant="top"
                     src={recipe.strMealThumb}
                     alt={recipe.strMeal}
-                    className="recipe-card-img"
+                    style={{ height: "200px", objectFit: "cover" }}
                   />
-                  <Card.Body classname="d-flex flex-column">
-                    <Card.Title className="mb-2">{recipe.strMeal}</Card.Title>
+                  <Card.Body className="d-flex flex-column">
+                    <Card.Title className="mb-2" style={{ fontSize: "1.1rem" }}>
+                      {recipe.strMeal}
+                    </Card.Title>
                     <div className="mb-2">
                       <Badge bg="secondary" className="me-2">
                         {recipe.strCategory}
                       </Badge>
                       <Badge bg="info">{recipe.strArea}</Badge>
                     </div>
-                    <Card.Text className="flex-grow-1">
-                      {recipe.strInstructions?.substring(0, 100)}...
+                    <Card.Text
+                      className="flex-grow-1 text-muted"
+                      style={{ fontSize: "0.9rem" }}
+                    >
+                      {recipe.strInstructions?.substring(0, 120)}...
                     </Card.Text>
                     <div className="d-flex gap-2 mt-auto">
                       <Button
@@ -193,7 +239,7 @@ export default function RecipePage() {
                         size="sm"
                         onClick={() => handleViewRecipe(recipe)}
                       >
-                        View Recipe
+                        View Details
                       </Button>
                       <Button
                         variant="primary"
@@ -211,10 +257,16 @@ export default function RecipePage() {
           ) : (
             <Col>
               <div className="text-center py-5">
+                <div className="mb-4">
+                  <span className="display-1">🍽️</span>
+                </div>
                 <h4>No recipes found</h4>
                 <p className="text-muted">
                   Try searching for something else or browse random recipes.
                 </p>
+                <Button variant="primary" onClick={fetchRandomRecipes}>
+                  Load Random Recipes
+                </Button>
               </div>
             </Col>
           )}
@@ -239,7 +291,14 @@ export default function RecipePage() {
                   <Badge bg="secondary" className="me-2">
                     {selectedRecipe.strCategory}
                   </Badge>
-                  <Badge bg="info">{selectedRecipe.strArea}</Badge>
+                  <Badge bg="info" className="me-2">
+                    {selectedRecipe.strArea}
+                  </Badge>
+                  {selectedRecipe.strTags && (
+                    <Badge bg="success">
+                      {selectedRecipe.strTags.split(",")[0]}
+                    </Badge>
+                  )}
                 </div>
               </Col>
               <Col md={6}>
@@ -257,17 +316,28 @@ export default function RecipePage() {
                 <p style={{ whiteSpace: "pre-line" }}>
                   {selectedRecipe.strInstructions}
                 </p>
-                {selectedRecipe.strYoutube && (
-                  <div className="mt-3">
+                <div className="d-flex gap-2 mt-3">
+                  {selectedRecipe.strYoutube && (
                     <Button
                       variant="danger"
                       href={selectedRecipe.strYoutube}
                       target="_blank"
+                      size="sm"
                     >
-                      Watch on Youtube
+                      📺 Watch Video
                     </Button>
-                  </div>
-                )}
+                  )}
+                  {selectedRecipe.strSource && (
+                    <Button
+                      variant="outline-primary"
+                      href={selectedRecipe.strSource}
+                      target="_blank"
+                      size="sm"
+                    >
+                      🔗 Source
+                    </Button>
+                  )}
+                </div>
               </Col>
             </Row>
           )}
@@ -295,17 +365,29 @@ export default function RecipePage() {
           <Modal.Title>Add Recipe to Event</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Add "{selectedRecipe?.strMeal}" to which event?</p>
+          <p>
+            Add "<strong>{selectedRecipe?.strMeal}</strong>" to which event?
+          </p>
           <Form.Select
             value={selectedEvent}
             onChange={(event) => setSelectedEvent(event.target.value)}
+            disabled={addingToEvent}
           >
             <option value="">Select an event...</option>
-            {events.map((event) => {
-              <option key={event.id} value={event.id}>
-                {event.name} - {new Date(event.date).toLocaleDateString()}
-              </option>;
-            })}
+            {events.map((event) => (
+              <option
+                key={event.id}
+                value={event.id}
+                disabled={
+                  selectedRecipe && isRecipeInEvent(selectedRecipe, event.id)
+                }
+              >
+                {event.title} - {new Date(event.date).toLocaleDateString()}
+                {selectedRecipe &&
+                  isRecipeInEvent(selectedRecipe, event.id) &&
+                  " (Already added)"}
+              </option>
+            ))}
           </Form.Select>
           {events.length === 0 && (
             <Alert variant="info" className="mt-3">
@@ -315,15 +397,26 @@ export default function RecipePage() {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowEventModal(false)}>
+          <Button
+            variant="secondary"
+            onClick={() => setShowEventModal(false)}
+            disabled={addingToEvent}
+          >
             Cancel
           </Button>
           <Button
             variant="primary"
-            onClick={handleConfimAddToEvent}
-            disabled={!selectedEvent}
+            onClick={handleConfirmAddToEvent}
+            disabled={!selectedEvent || addingToEvent}
           >
-            Add to Event
+            {addingToEvent ? (
+              <>
+                <Spinner animation="border" size="sm" className="me-2" />
+                Adding...
+              </>
+            ) : (
+              "Add to Event"
+            )}
           </Button>
         </Modal.Footer>
       </Modal>
