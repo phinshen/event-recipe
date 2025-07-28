@@ -23,34 +23,69 @@ export default function HomePage() {
         </Col>
       </Row>
 
-      {/* Stats Card */}
+      {/* Stats Cards - NOW CLICKABLE */}
       <Row className="mb-5">
-        <Col md={4} className="mb-3">
-          <Card className="text-center h-100 border-primary stats-card">
-            <Card.Body>
-              <div className="display-4 text-primary mb-2">📅</div>
-              <Card.Title>{events.length}</Card.Title>
-              <Card.Text className="text-muted">Total Events</Card.Text>
-            </Card.Body>
-          </Card>
+        <Col md={6} className="mb-3">
+          <Link to="/events" style={{ textDecoration: "none" }}>
+            <Card
+              className="text-center h-100 border-primary stats-card clickable-card"
+              style={{
+                cursor: "pointer",
+                transition: "all 0.2s ease-in-out",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow =
+                  "0 4px 12px rgba(0,123,255,0.3)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "";
+              }}
+            >
+              <Card.Body>
+                <div className="display-4 text-primary mb-2">📅</div>
+                <Card.Title style={{ color: "inherit" }}>
+                  {events.length}
+                </Card.Title>
+                <Card.Text className="text-muted">Total Events</Card.Text>
+                <small className="text-primary" style={{ fontSize: "0.8rem" }}>
+                  Click to manage events →
+                </small>
+              </Card.Body>
+            </Card>
+          </Link>
         </Col>
-        <Col md={4} className="mb-3">
-          <Card className="text-center h-100 border-primary stats-card">
-            <Card.Body>
-              <div className="display-4 text-primary mb-2">🍽️</div>
-              <Card.Title>{totalRecipes}</Card.Title>
-              <Card.Text className="text-muted">Saved Recipes</Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={4} className="mb-3">
-          <Card className="text-center h-100 border-primary stats-card">
-            <Card.Body>
-              <div className="display-4 text-primary mb-2">⭐</div>
-              <Card.Title>Premium</Card.Title>
-              <Card.Text className="text-muted">Account Status</Card.Text>
-            </Card.Body>
-          </Card>
+        <Col md={6} className="mb-3">
+          <Link to="/recipes" style={{ textDecoration: "none" }}>
+            <Card
+              className="text-center h-100 border-primary stats-card clickable-card"
+              style={{
+                cursor: "pointer",
+                transition: "all 0.2s ease-in-out",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow =
+                  "0 4px 12px rgba(0,123,255,0.3)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "";
+              }}
+            >
+              <Card.Body>
+                <div className="display-4 text-primary mb-2">🍽️</div>
+                <Card.Title style={{ color: "inherit" }}>
+                  {totalRecipes}
+                </Card.Title>
+                <Card.Text className="text-muted">Saved Recipes</Card.Text>
+                <small className="text-primary" style={{ fontSize: "0.8rem" }}>
+                  Click to browse recipes →
+                </small>
+              </Card.Body>
+            </Card>
+          </Link>
         </Col>
       </Row>
 
@@ -73,7 +108,7 @@ export default function HomePage() {
                   Discover new recipes from TheMealDB and add them to your
                   events.
                 </Card.Text>
-                <Button as={Link} to="/recipe" variant="primary">
+                <Button as={Link} to="/recipes" variant="primary">
                   Browse Recipes
                 </Button>
               </div>
@@ -91,7 +126,7 @@ export default function HomePage() {
                 <Card.Text>
                   Create new events or manage your existing ones.
                 </Card.Text>
-                <Button as={Link} to="/event" variant="success">
+                <Button as={Link} to="/events" variant="success">
                   Manage Events
                 </Button>
               </div>
@@ -117,13 +152,13 @@ export default function HomePage() {
                         </small>
                       </Card.Text>
                       <Card.Text>{event.description}</Card.Text>
-                      <div className="d-flex justify-content-netween align-items-center">
+                      <div className="d-flex justify-content-between align-items-center">
                         <small className="text-muted">
                           {event.recipes.length} recipes
                         </small>
                         <Button
                           as={Link}
-                          to="/events"
+                          to="/event"
                           variant="outline-primary"
                           size="sm"
                         >

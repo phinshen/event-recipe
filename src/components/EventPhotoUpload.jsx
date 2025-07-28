@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { Button, Alert, Image, Card } from "react-bootstrap";
 import { validateImageFile } from "../utils/photoUpload";
 
-const PhotoUpload = ({
+const EventPhotoUpload = ({
   onPhotoSelect,
   selectedPhoto,
   error,
@@ -42,13 +42,15 @@ const PhotoUpload = ({
   const handleDrop = (event) => {
     event.preventDefault();
     setDragOver(false);
-    if (!disabled) return;
+    // FIXED: Should return early if disabled is TRUE, not FALSE
+    if (disabled) return;
 
     const file = event.dataTransfer.files[0];
     if (file) {
       processFile(file);
     }
   };
+
   const processFile = (file) => {
     try {
       validateImageFile(file);
@@ -127,10 +129,9 @@ const PhotoUpload = ({
         </Card>
       ) : (
         <div
-          className={`text-center py-5 border rounded &{
-                    dragOver ? "border-primary bg-light" : "border-dashed"} ${
-                      disabled ? "bg-light" : ""
-                    }`}
+          className={`text-center py-5 border rounded ${
+            dragOver ? "border-primary bg-light" : "border-dashed"
+          } ${disabled ? "bg-light" : ""}`}
           style={{
             borderColor: dragOver ? "#007bff" : "#dee2e6",
             borderStyle: "dashed",
@@ -172,4 +173,4 @@ const PhotoUpload = ({
   );
 };
 
-export default PhotoUpload;
+export default EventPhotoUpload;

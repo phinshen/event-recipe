@@ -28,9 +28,9 @@ const compressImage = (file, maxWidth = 400, quality = 0.8) => {
   });
 };
 
-// validate image file
+// validate image file - FIXED: "images/jpeg" -> "image/jpeg"
 export const validateImageFile = (file) => {
-  const validTypes = ["images/jpeg", "image/jpg", "image/png", "image/webp"];
+  const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
   const maxSize = 5 * 1024 * 1024; // 5MB
 
   if (!validTypes.includes(file.type)) {

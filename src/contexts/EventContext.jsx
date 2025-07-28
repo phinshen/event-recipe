@@ -70,7 +70,9 @@ export const EventProvider = ({ children }) => {
           },
         }
       );
+
       setEvents((prevEvents) => [...prevEvents, res.data]);
+      return res.data; // Return the created event for photo upload
     } catch (err) {
       console.error("Create Event Error:", err);
       throw err;
@@ -90,7 +92,7 @@ export const EventProvider = ({ children }) => {
 
       const res = await axios.put(
         `https://event-recipe-api.vercel.app/events/${eventId}`,
-        updatedEvent,
+        updatedEvent, // This now includes image_url
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -98,12 +100,14 @@ export const EventProvider = ({ children }) => {
         }
       );
 
-      // Update the event in the state, keeping existing recipes
+      // Update the event in the state, preserving existing recipes
       setEvents((prevEvents) =>
         prevEvents.map((event) =>
-          event.id === eventId ? { ...res.data, recipes: event.recipes } : event
+          event.id === eventId ? { ...event, ...res.data } : event
         )
       );
+
+      return res.data; // Return updated event data
     } catch (err) {
       console.error("Update Event Error:", err);
       throw err;
