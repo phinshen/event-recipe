@@ -27,7 +27,7 @@ export default function SignupPage() {
 
   const getFirebaseErrorMessage = (errorCode) => {
     switch (errorCode) {
-      case " auth/email-already-in-use":
+      case "auth/email-already-in-use":
         return "An account with this email already exists.";
       case "auth/invalid-email":
         return "Please enter a valid email.";
@@ -82,7 +82,9 @@ export default function SignupPage() {
       await signup(formData.email, formData.password, formData.name);
       navigate("/home");
     } catch (error) {
-      setError(error, "Failed to create an account.");
+      setError(
+        getFirebaseErrorMessage(error.code) || "Failed to create an account."
+      );
     } finally {
       setLoading(false);
     }
@@ -188,7 +190,7 @@ export default function SignupPage() {
                   <Form.Label>Confirm Password</Form.Label>
                   <Form.Control
                     type="password"
-                    placeholder="Enter your password"
+                    placeholder="Confirm your password"
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}

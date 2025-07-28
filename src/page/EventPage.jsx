@@ -576,7 +576,7 @@ export default function EventPage() {
                                   }}
                                   title="View recipe details"
                                 >
-                                  👁️
+                                  <i class="fa-regular fa-eye"></i>
                                 </Button>
                                 <Button
                                   variant="outline-danger"
@@ -591,7 +591,7 @@ export default function EventPage() {
                                   }}
                                   title="Remove from event"
                                 >
-                                  🗑️
+                                  <i class="fa-regular fa-trash-can"></i>
                                 </Button>
                               </div>
                             </ListGroup.Item>
@@ -1072,7 +1072,7 @@ export default function EventPage() {
                       target="_blank"
                       size="sm"
                     >
-                      📺 Watch Video
+                      <i class="fa-brands fa-youtube"></i> Watch Video
                     </Button>
                   )}
 

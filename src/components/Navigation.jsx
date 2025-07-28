@@ -18,7 +18,7 @@ export default function Navigation() {
     <Navbar bg="dark" variant="dark" expand="lg" sticky="top">
       <Container>
         <Navbar.Brand as={Link} to="/" className="fw-bold">
-          🍽️ EventRecipe
+          <i class="fa-solid fa-bowl-food"></i> EventRecipe
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">

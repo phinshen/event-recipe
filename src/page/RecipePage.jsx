@@ -324,7 +324,7 @@ export default function RecipePage() {
                       target="_blank"
                       size="sm"
                     >
-                      📺 Watch Video
+                      <i class="fa-brands fa-youtube"></i> Watch Video
                     </Button>
                   )}
                   {selectedRecipe.strSource && (

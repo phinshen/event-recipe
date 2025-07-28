@@ -27,15 +27,17 @@ export default function LoginPage() {
         return "No account found with this email address.";
       case "auth/wrong-password":
         return "Incorrect password. Please try again.";
-      case "auth/invali-email":
+      case "auth/invalid-email":
         return "Please enter a valid email address.";
       case "auth/user-disabled":
-        return "This account has veen disabled.";
+        return "This account has been disabled.";
       case "auth/too-many-requests":
         return "Too many failed attempts. Please try again later.";
       case "auth/popup-closed-by-user":
+        return "Sign-in was cancelled. Please try again.";
+      case "auth/popup-blocked":
         return "Pop-up was blocked. Please allow pop-ups and try again.";
-      case "cancelled-popup-request":
+      case "auth/cancelled-popup-request":
         return "Sign-in was cancelled.";
       default:
         return "An error occurred during sign-in. Please try again.";
@@ -92,7 +94,9 @@ export default function LoginPage() {
         <Col md={6} lg={4}>
           <Card className="shadow">
             <Card.Body className="p-4">
-              <div className="text-conter mb-4">
+              <div className="text-center mb-4">
+                {" "}
+                {/* FIXED: was "text-conter" */}
                 <h2 className="fw-bold">Welcome Back</h2>
                 <p className="text-muted">Sign in to your account</p>
               </div>
@@ -153,7 +157,7 @@ export default function LoginPage() {
 
                 <div className="text-center">
                   <p className="mb-0">
-                    Don't have an accoount?{" "}
+                    Don't have an account?
                     <Link to="/signup" className="text-decoration-none">
                       Sign up here
                     </Link>
