@@ -9,6 +9,7 @@ import SignupPage from "./page/SignupPage";
 import Footer from "./components/Footer";
 import EventPage from "./page/EventPage";
 import RecipePage from "./page/RecipePage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
   return (
@@ -22,9 +23,31 @@ export default function App() {
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />
-                <Route path="/home" element={<HomePage />} />
-                <Route path="/events" element={<EventPage />} />
-                <Route path="/recipes" element={<RecipePage />} />
+
+                <Route
+                  path="/home"
+                  element={
+                    <ProtectedRoute>
+                      <HomePage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/events"
+                  element={
+                    <ProtectedRoute>
+                      <EventPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/recipes"
+                  element={
+                    <ProtectedRoute>
+                      <RecipePage />
+                    </ProtectedRoute>
+                  }
+                />
               </Routes>
             </main>
             <Footer />

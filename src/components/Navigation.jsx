@@ -17,7 +17,7 @@ export default function Navigation() {
   return (
     <Navbar bg="dark" variant="dark" expand="lg" sticky="top">
       <Container>
-        <Navbar.Brand as={Link} to="/" className="fw-bold">
+        <Navbar.Brand as={Link} to="/home" className="fw-bold">
           <i class="fa-solid fa-bowl-food"></i> EventRecipe
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />

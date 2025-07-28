@@ -9,7 +9,7 @@ export default function LandingPage() {
       <section className="hero-section bg-dark text-black py-5">
         <Container>
           <Row className="align-items-center min-vh-75">
-            <Col lg={6}>
+            <Col lg={6} className="mb-4 mb-lg-0">
               <h1 className="display-4 fw-bold text-white mb-4">
                 Organize Your Events with Perfect Recipes
               </h1>
@@ -19,7 +19,7 @@ export default function LandingPage() {
                 or casual gathering, EventRecipe helps you plan the perfect
                 menu.
               </p>
-              <div className="d-flex gap-3">
+              <div className="d-flex flex-column flex-sm-row gap-3">
                 <Button as={Link} to="/signup" variant="light" size="lg">
                   Get Started
                 </Button>
@@ -33,8 +33,13 @@ export default function LandingPage() {
                 <img
                   src={landingImg1}
                   alt="Recipe Organization"
-                  className="img-fluid rounded shadow ms-5"
-                  style={{ width: "600px", height: "400px" }}
+                  className="img-fluid rounded shadow"
+                  style={{
+                    maxWidth: "100%",
+                    height: "auto",
+                    maxHeight: "400px",
+                    objectFit: "cover",
+                  }}
                 />
               </div>
             </Col>
