@@ -29,7 +29,7 @@ export default function Footer() {
           <Col md={6} className="text-md-end">
             <div className="d-flex align-items-center justify-content-md-end gap-3">
               <a
-                href="https://github.com/yourusername"
+                href="https://github.com/phinshen"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-decoration-none"
@@ -38,7 +38,7 @@ export default function Footer() {
                 <i className="fab fa-github"></i> GitHub
               </a>
               <a
-                href="https://linkedin.com/in/yourusername"
+                href="https://www.linkedin.com/in/phin-shen-chin-96290b244/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-decoration-none"
